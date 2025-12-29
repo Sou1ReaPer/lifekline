@@ -1,9 +1,8 @@
 import { UserInput, LifeDestinyResult, Gender } from "../types";
 import { BAZI_SYSTEM_INSTRUCTION } from "../constants";
 
-// TODO: 请将您的 OpenAI 格式密钥填入此处
-const API_KEY = "sk-UnpzkQCEqt3xRSs0FjzxkYKt8SULkjHTGviSoXsHtm0YHtTx"; 
-const API_BASE_URL = "https://max.openai365.top/v1";
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const API_BASE_URL = import.meta.env.VITE_GEMINI_API_BASE_URL;
 
 // Helper to determine stem polarity
 const getStemPolarity = (pillar: string): 'YANG' | 'YIN' => {
@@ -18,10 +17,12 @@ const getStemPolarity = (pillar: string): 'YANG' | 'YIN' => {
 };
 
 export const generateLifeAnalysis = async (input: UserInput): Promise<LifeDestinyResult> => {
-  
-  // 简单检查 Key 是否已替换
-  if (!API_KEY || API_KEY.includes("YOUR_API_KEY_HERE")) {
-    console.warn("警告: API Key 尚未设置，请在 services/geminiService.ts 中填入密钥。");
+  if (!API_KEY) {
+    throw new Error("API Key 尚未配置，请在环境变量 VITE_GEMINI_API_KEY 中提供。");
+  }
+
+  if (!API_BASE_URL) {
+    throw new Error("API Base URL 尚未配置，请在环境变量 VITE_GEMINI_API_BASE_URL 中提供。");
   }
 
   const genderStr = input.gender === Gender.MALE ? '男 (乾造)' : '女 (坤造)';
